@@ -158,15 +158,12 @@ img { display: block; max-width: 100%; height: auto; }
 .crop img { max-width: none; }
 .crop-admin { aspect-ratio: 1200 / 960; }
 .crop-admin img { width: 120%; margin-left: -20%; }
-.crop-trainer-home { aspect-ratio: 647 / 640; }
-.crop-trainer-home img { width: 100%; margin-top: -117.47%; }
 .phone { padding: 7px; border-radius: 30px; background: #141518; box-shadow: 0 24px 44px -24px rgba(17, 17, 17, .45); }
 .phone img { border-radius: 24px; }
 
 .l-admin { top: 0; right: 0; width: 86%; }
 .l-member { left: 0; bottom: 0; width: 36%; }
-.l-trainer { right: 2%; bottom: 3%; width: 40%; }
-.l-trainer .frame { border-radius: 20px; }
+.l-trainer { right: 4%; bottom: 6%; width: 30%; }
 
 @media (min-width: 1024px) {
   .hero { padding-top: 64px; }
@@ -236,9 +233,12 @@ img { display: block; max-width: 100%; height: auto; }
 .steps .n { font-size: 12px; font-weight: 700; color: rgba(255, 255, 255, .55); }
 .steps h3 { margin-top: 2px; font-size: 19px; letter-spacing: -.02em; }
 .steps p { margin-top: 4px; color: rgba(255, 255, 255, .72); }
-/* one trainer screen; capped near the source width (647px) so it stays sharp */
-.pt-figure { width: min(100%, 360px); margin-inline: auto; }
-.pt-card { background: #fff; border-radius: 24px; overflow: hidden; }
+/* two trainer screens, same frame and size; the second sits a step lower */
+.pt-figure { width: min(100%, 560px); margin-inline: auto; }
+.pt-phones { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.pt-phone { box-shadow: 0 0 0 1px rgba(255, 255, 255, .14), 0 24px 48px -24px rgba(0, 0, 0, .8); }
+.pt-phone + .pt-phone { margin-top: 40px; }
+@media (min-width: 1024px) { .pt-phones { gap: 24px; } .pt-phone + .pt-phone { margin-top: 64px; } }
 @media (min-width: 1024px) {
   .pt-body { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 96px; align-items: center; }
 }
@@ -370,10 +370,8 @@ img { display: block; max-width: 100%; height: auto; }
               </div>
             </div>
             <div class="layer l-trainer">
-              <div class="frame">
-                <div class="crop crop-trainer-home">
-                  <img src="/images/store-trainer-hero.jpg" alt="PROT 트레이너 앱 홈 예시 화면" width="647" height="1400">
-                </div>
+              <div class="phone">
+                <img src="/images/screen-trainer-home.png" alt="PROT 트레이너 앱 홈 예시 화면" width="720" height="1558">
               </div>
             </div>
             <div class="layer l-member">
@@ -442,9 +440,12 @@ img { display: block; max-width: 100%; height: auto; }
           <li class="reveal" style="--d:4"><span class="n">04</span><h3>트레이너 예약 확인</h3><p>들어온 요청은 트레이너 홈 화면에서 바로 확인해요.</p></li>
         </ol>
         <figure class="pt-figure reveal" style="--d:2">
-          <div class="pt-card">
-            <div class="crop crop-trainer-home">
-              <img src="/images/store-trainer-hero.jpg" alt="PROT 트레이너 앱 홈 예시 화면" width="647" height="1400" loading="lazy">
+          <div class="pt-phones">
+            <div class="phone pt-phone">
+              <img src="/images/screen-trainer-schedule.png" alt="PROT 트레이너 앱 일정 예시 화면" width="720" height="1558" loading="lazy">
+            </div>
+            <div class="phone pt-phone">
+              <img src="/images/screen-trainer-home.png" alt="PROT 트레이너 앱 홈 예시 화면" width="720" height="1558" loading="lazy">
             </div>
           </div>
           <figcaption class="caption">예시 화면 · 실제 데이터 아님</figcaption>
