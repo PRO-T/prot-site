@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="ko" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PROT · 헬스장 회원 경험과 운영, 1회 PT 판매</title>
+<meta name="description" content="회원은 앱으로 PT를 예약하고 수업 기록을 다시 봅니다. 대표님은 문의와 공지를 PROT Admin에서 챙기고, 트레이너의 빈 시간은 1회 PT 판매로 이어집니다.">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light only">
+<link rel="icon" href="/images/app-icon-member.png">
+<style>
+:root {
+  color-scheme: light only;
+  --brand: #F54336;
+  --brand-deep: #C8261B;
+  --ink: #111111;
+  --ink-2: #2B2D31;
+  --muted: #5C616B;
+  --line: #E6E7EA;
+  --paper: #FFFFFF;
+  --gray: #F5F5F6;
+  --dark: #0B0C10;
+  --dark-line: rgba(255, 255, 255, .14);
+  --nav-h: 64px;
+  --gap-section: 72px;
+  --ease: cubic-bezier(.22, 1, .36, 1);
+}
+@media (min-width: 1024px) {
+  :root { --gap-section: 120px; --nav-h: 72px; }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--nav-h) + 8px);
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  -webkit-font-smoothing: antialiased;
+}
+@media (min-width: 1024px) { body { font-size: 16px; } }
+h1, h2, h3, p, figure, ol, ul, dl, dd { margin: 0; }
+ol, ul { padding: 0; list-style: none; }
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; height: auto; }
+:focus-visible { outline: 2px solid var(--brand-deep); outline-offset: 3px; }
+
+.container { width: min(1200px, 100% - 40px); margin-inline: auto; }
+.section { padding: var(--gap-section) 0; }
+.section-gray { background: var(--gray); }
+.key { color: var(--brand); }
+
+.label { display: block; font-size: 13px; font-weight: 700; letter-spacing: .02em; color: var(--muted); }
+.title {
+  font-size: clamp(28px, 7.2vw, 52px);
+  line-height: 1.22;
+  font-weight: 800;
+  letter-spacing: -.035em;
+}
+.lead { margin-top: 18px; max-width: 34em; color: var(--muted); }
+.caption { margin-top: 12px; font-size: 12px; color: var(--muted); }
+
+/* Buttons: deep red keeps white text at 5.6:1 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 22px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color .25s var(--ease), color .25s, border-color .25s, transform .25s var(--ease);
+}
+.btn:hover { transform: translateY(-1px); }
+.btn-primary { background: var(--brand-deep); color: #fff; }
+.btn-primary:hover { background: #A81E14; }
+.btn-line { background: transparent; color: var(--ink); border-color: #CDD0D5; }
+.btn-line:hover { border-color: var(--ink); }
+.btn-sm { min-height: 40px; padding: 0 16px; font-size: 14px; }
+
+/* ---------- Header ---------- */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: var(--nav-h);
+  background: rgba(255, 255, 255, .94);
+  border-bottom: 1px solid transparent;
+  transition: border-color .3s, background-color .3s;
+}
+.nav.scrolled { border-bottom-color: var(--line); background: rgba(255, 255, 255, .97); }
+.nav-inner { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.logo img { width: auto; height: 22px; }
+.nav-links { display: none; gap: 32px; font-size: 15px; font-weight: 600; color: var(--ink-2); }
+.nav-links a { padding: 6px 0; border-bottom: 1px solid transparent; transition: border-color .2s; }
+.nav-links a:hover { border-bottom-color: var(--ink); }
+@media (min-width: 900px) { .nav-links { display: flex; } }
+.nav-right { display: flex; align-items: center; gap: 8px; }
+.menu { position: relative; }
+.menu summary {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex; align-items: center;
+  min-height: 40px; padding: 0 14px;
+  border: 1px solid #CDD0D5; border-radius: 999px;
+  font-size: 14px; font-weight: 700;
+}
+.menu summary::-webkit-details-marker { display: none; }
+.menu[open] summary { border-color: var(--ink); }
+.menu-panel {
+  position: absolute; right: 0; top: calc(100% + 8px);
+  min-width: 200px; padding: 8px 0;
+  background: #fff; border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: 0 12px 28px -18px rgba(17, 17, 17, .35);
+}
+.menu-panel a { display: block; padding: 12px 18px; font-size: 15px; font-weight: 600; }
+.menu-panel a:hover { background: var(--gray); }
+@media (min-width: 900px) { .menu { display: none; } }
+
+/* ---------- 01 Hero ---------- */
+.hero { padding: 40px 0 var(--gap-section); overflow: hidden; }
+.hero-grid { display: grid; gap: 48px; align-items: center; }
+.eyebrow { font-size: 14px; font-weight: 700; color: var(--ink-2); }
+.hero h1 {
+  margin-top: 18px;
+  font-size: clamp(36px, 10vw, 88px);
+  line-height: 1.08;
+  font-weight: 800;
+  letter-spacing: -.045em;
+}
+.hero h1 .line { display: block; }
+.hero h1 .chunk { display: inline-block; white-space: nowrap; }
+.nw { white-space: nowrap; }
+.hero-sub { margin-top: 24px; max-width: 30em; font-size: 16px; color: var(--ink-2); }
+.hero-cta { margin-top: 32px; display: flex; flex-wrap: wrap; gap: 10px; }
+.proof { margin-top: 28px; display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--muted); }
+.proof::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); flex: none; }
+
+/* Layered product shot */
+.stack { position: relative; aspect-ratio: 1 / 1.02; }
+.layer { position: absolute; }
+.frame { background: #fff; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; box-shadow: 0 18px 40px -24px rgba(17, 17, 17, .28); }
+.frame-bar { display: flex; gap: 5px; padding: 9px 12px; border-bottom: 1px solid var(--line); background: #FAFAFA; }
+.frame-bar i { width: 7px; height: 7px; border-radius: 50%; background: #D7D9DD; }
+.crop { position: relative; overflow: hidden; }
+.crop img { max-width: none; }
+.crop-admin { aspect-ratio: 1200 / 960; }
+.crop-admin img { width: 120%; margin-left: -20%; }
+.crop-trainer-home { aspect-ratio: 647 / 640; }
+.crop-trainer-home img { width: 100%; margin-top: -117.47%; }
+.phone { padding: 7px; border-radius: 30px; background: #141518; box-shadow: 0 24px 44px -24px rgba(17, 17, 17, .45); }
+.phone img { border-radius: 24px; }
+
+.l-admin { top: 0; right: 0; width: 86%; }
+.l-member { left: 0; bottom: 0; width: 36%; }
+.l-trainer { right: 2%; bottom: 3%; width: 40%; }
+.l-trainer .frame { border-radius: 20px; }
+
+@media (min-width: 1024px) {
+  .hero { padding-top: 64px; }
+  .hero-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 40px; }
+  .stack { perspective: 1800px; }
+  .stack-inner { position: absolute; inset: 0; transform-style: preserve-3d; transform: rotateY(-12deg) rotateX(5deg); }
+  .l-admin { transform: translateZ(-80px); }
+  .l-trainer { transform: translateZ(40px); }
+  .l-member { transform: translateZ(110px); }
+}
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .stack-inner { animation: sway 14s ease-in-out infinite; }
+  .l-member { animation: floatA 9s ease-in-out infinite; }
+  .l-trainer { animation: floatB 11s ease-in-out infinite; }
+}
+@keyframes sway {
+  0%, 100% { transform: rotateY(-12deg) rotateX(5deg); }
+  50% { transform: rotateY(-8deg) rotateX(3deg); }
+}
+@keyframes floatA {
+  0%, 100% { transform: translateZ(110px) translateY(0); }
+  50% { transform: translateZ(110px) translateY(-8px); }
+}
+@keyframes floatB {
+  0%, 100% { transform: translateZ(40px) translateY(0); }
+  50% { transform: translateZ(40px) translateY(6px); }
+}
+
+/* ---------- 02 Problem: type only ---------- */
+.problem-grid { display: grid; gap: 40px; }
+.problem-list { counter-reset: p; border-top: 1px solid var(--ink); }
+.problem-list li { counter-increment: p; display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 4px 12px; padding: 24px 0; border-bottom: 1px solid var(--line); }
+.problem-list li::before { content: counter(p, decimal-leading-zero); grid-row: span 2; font-size: 13px; font-weight: 700; color: var(--muted); padding-top: 4px; }
+.problem-list h3 { font-size: 19px; letter-spacing: -.02em; }
+.problem-list p { color: var(--muted); }
+@media (min-width: 1024px) {
+  .problem-grid { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 80px; align-items: start; }
+  .problem-list li { padding: 28px 0; }
+}
+
+/* ---------- 03 Member: image left, text right ---------- */
+.split { display: grid; gap: 40px; align-items: center; }
+.member-shot { max-width: 400px; width: 100%; margin-inline: auto; }
+.member-shot .frame { border-radius: 24px; }
+.app-tag { display: inline-flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; }
+.app-tag img { width: 28px; height: 28px; border-radius: 7px; }
+.feature-rows { margin-top: 32px; border-top: 1px solid var(--line); }
+.feature-rows div { display: grid; gap: 2px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.feature-rows dt { font-weight: 700; font-size: 16px; }
+.feature-rows dd { color: var(--muted); }
+@media (min-width: 1024px) {
+  .split { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 96px; }
+  .feature-rows div { grid-template-columns: 180px minmax(0, 1fr); gap: 24px; }
+}
+
+/* ---------- 04 PT: dark, step flow ---------- */
+.dark { background: var(--dark); color: #fff; }
+.dark .label { color: rgba(255, 255, 255, .62); }
+.dark .lead { color: rgba(255, 255, 255, .74); }
+.dark .caption { color: rgba(255, 255, 255, .6); }
+.pt-head { max-width: 760px; }
+.pt-body { margin-top: 56px; display: grid; gap: 48px; }
+.steps li { position: relative; padding: 0 0 32px 36px; }
+.steps li::before { content: ""; position: absolute; left: 5px; top: 10px; bottom: -6px; width: 1px; background: var(--dark-line); }
+.steps li:last-child::before { display: none; }
+.steps li::after { content: ""; position: absolute; left: 0; top: 6px; width: 11px; height: 11px; border-radius: 50%; border: 2px solid var(--brand); background: var(--dark); }
+.steps .n { font-size: 12px; font-weight: 700; color: rgba(255, 255, 255, .55); }
+.steps h3 { margin-top: 2px; font-size: 19px; letter-spacing: -.02em; }
+.steps p { margin-top: 4px; color: rgba(255, 255, 255, .72); }
+/* one trainer screen; capped near the source width (647px) so it stays sharp */
+.pt-figure { width: min(100%, 360px); margin-inline: auto; }
+.pt-card { background: #fff; border-radius: 24px; overflow: hidden; }
+@media (min-width: 1024px) {
+  .pt-body { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 96px; align-items: center; }
+}
+
+/* ---------- 05 Admin: text left, wide image right ---------- */
+.ops { margin-top: 36px; display: grid; gap: 0 32px; grid-template-columns: minmax(0, 1fr); border-top: 1px solid var(--line); }
+.ops div { padding: 18px 0; border-bottom: 1px solid var(--line); }
+.ops dt { font-weight: 700; }
+.ops dd { margin-top: 2px; color: var(--muted); font-size: 15px; }
+@media (min-width: 640px) { .ops { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) {
+  .admin-split { grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 72px; }
+}
+
+/* ---------- 06 Onboarding: one line, three stops ---------- */
+.flow { margin-top: 48px; display: grid; gap: 28px; }
+.flow li { padding-top: 22px; border-top: 2px solid var(--ink); }
+.flow li:first-child { border-top-color: var(--brand); }
+.flow .n { font-size: 13px; font-weight: 700; color: var(--muted); }
+.flow h3 { margin-top: 6px; font-size: 20px; letter-spacing: -.02em; }
+.flow p { margin-top: 6px; color: var(--muted); }
+@media (min-width: 768px) { .flow { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; } }
+
+/* ---------- 07 Pricing + FAQ ---------- */
+.pf-grid { display: grid; gap: 56px; }
+.pricing .title { max-width: 14em; }
+.pricing .btn { margin-top: 28px; }
+.faq { border-top: 1px solid var(--ink); }
+.faq details { border-bottom: 1px solid var(--line); }
+.faq summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  padding: 20px 0;
+  font-weight: 700;
+  font-size: 16px;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; flex: none; font-size: 22px; font-weight: 400; line-height: 1; color: var(--muted); transition: transform .25s var(--ease); }
+.faq details[open] summary::after { transform: rotate(45deg); }
+.faq details p { padding: 0 0 20px; color: var(--muted); max-width: 36em; }
+@media (min-width: 1024px) { .pf-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 96px; } }
+
+/* ---------- 08 Contact ---------- */
+.contact .title { max-width: 16em; }
+.contact .row { margin-top: 32px; display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: center; }
+.contact .mail { font-size: 15px; font-weight: 700; color: var(--ink-2); }
+
+/* ---------- Footer ---------- */
+.footer { padding: 40px 0 48px; background: var(--dark); color: rgba(255, 255, 255, .72); font-size: 14px; }
+.footer-inner { display: grid; gap: 24px; }
+.footer img { width: auto; height: 20px; }
+.footer a { color: #fff; }
+.footer-links { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+.footer-links a { color: #fff; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(255, 255, 255, .35); }
+.footer-biz { display: grid; gap: 4px; font-size: 13px; }
+@media (min-width: 1024px) {
+  .footer-inner { grid-template-columns: auto 1fr auto; align-items: start; gap: 24px 56px; }
+}
+
+/* ---------- Reveal ---------- */
+.js .reveal { opacity: 0; transform: translateY(20px); transition: opacity .7s var(--ease), transform .7s var(--ease); transition-delay: calc(var(--d, 0) * 80ms); }
+.js .reveal.is-visible { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .js .reveal { opacity: 1; transform: none; }
+  .stack-inner, .l-admin, .l-trainer, .l-member { transform: none !important; }
+  .btn:hover { transform: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="container nav-inner">
+    <a class="logo" href="#hero" aria-label="PROT 처음으로">
+      <img src="/images/wordmark-dark.png" alt="PROT" width="800" height="158">
+    </a>
+    <nav class="nav-links" aria-label="주요 메뉴">
+      <a href="#member">기능 소개</a>
+      <a href="#pt">1회 PT</a>
+      <a href="#pricing">요금 안내</a>
+      <a href="/support/">고객지원</a>
+    </nav>
+    <div class="nav-right">
+      <details class="menu">
+        <summary aria-label="메뉴 열기">메뉴</summary>
+        <nav class="menu-panel" aria-label="모바일 메뉴">
+          <a href="#member">기능 소개</a>
+          <a href="#pt">1회 PT</a>
+          <a href="#pricing">요금 안내</a>
+          <a href="/support/">고객지원</a>
+        </nav>
+      </details>
+      <a class="btn btn-primary btn-sm" href="mailto:contact@prot.co.kr?subject=PROT%20%EB%8F%84%EC%9E%85%20%EC%83%81%EB%8B%B4">도입 상담</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- 01 Hero -->
+  <section class="hero" id="hero" aria-labelledby="hero-title">
+    <div class="container hero-grid">
+      <div>
+        <p class="eyebrow">헬스장 회원 경험·운영·PT 판매를 하나로</p>
+        <h1 id="hero-title">
+          <span class="line"><span class="chunk">회원 경험은</span> <span class="chunk key">차별화하고,</span></span>
+          <span class="line"><span class="chunk">헬스장 운영은</span> <span class="chunk">한 단계 더.</span></span>
+        </h1>
+        <p class="hero-sub">회원은 앱으로 PT를 예약하고 지난 수업 기록을 다시 봅니다. 대표님은 문의와 공지를 한 곳에서 챙기고, 트레이너의 빈 시간은 1회 PT 판매로 이어져요.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="mailto:contact@prot.co.kr?subject=PROT%20%EB%8F%84%EC%9E%85%20%EC%83%81%EB%8B%B4">우리 헬스장 도입 상담</a>
+          <a class="btn btn-line" href="#member">실제 서비스 살펴보기</a>
+        </div>
+        <p class="proof">지금 바로 쓸 수 있는 1회 PT 예약·판매 기능</p>
+      </div>
+
+      <figure>
+        <div class="stack">
+          <div class="stack-inner">
+            <div class="layer l-admin">
+              <div class="frame">
+                <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+                <div class="crop crop-admin">
+                  <img src="/images/screen-admin-dashboard.png" alt="PROT Admin 대시보드 예시 화면" width="1440" height="960" fetchpriority="high">
+                </div>
+              </div>
+            </div>
+            <div class="layer l-trainer">
+              <div class="frame">
+                <div class="crop crop-trainer-home">
+                  <img src="/images/store-trainer-hero.jpg" alt="PROT 트레이너 앱 홈 예시 화면" width="647" height="1400">
+                </div>
+              </div>
+            </div>
+            <div class="layer l-member">
+              <div class="phone">
+                <img src="/images/screen-member-home.png" alt="PROT 회원 앱 홈 예시 화면" width="416" height="900">
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption class="caption">예시 화면 · 실제 데이터 아님</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 02 Problem -->
+  <section class="section section-gray" id="problem" aria-labelledby="problem-title">
+    <div class="container problem-grid">
+      <div class="reveal">
+        <h2 class="title" id="problem-title">운동하는 시간 밖에서도, 회원은 서비스를 경험합니다.</h2>
+        <p class="lead">회원은 집에서 다음 PT 시간을 확인하고, 출근길에 센터 공지를 봅니다. 헬스장 서비스는 문밖에서도 이어지고 있어요.</p>
+      </div>
+      <ol class="problem-list">
+        <li class="reveal" style="--d:1"><h3>흩어진 회원 경험</h3><p>예약은 카톡으로 잡고, 공지는 단체방에서 찾습니다. 회원 입장에선 확인할 곳이 너무 많아요.</p></li>
+        <li class="reveal" style="--d:2"><h3>대표님이 놓치기 쉬운 운영 정보</h3><p>상담 요청은 데스크 메모에, 회원 문의는 트레이너 휴대폰에 남습니다. 대표님이 알게 될 땐 이미 늦을 때가 있죠.</p></li>
+        <li class="reveal" style="--d:3"><h3>매출로 이어지지 못하는 빈 시간</h3><p>오후 2시가 비어 있어도 회원은 그걸 모릅니다. 알릴 방법이 없으면 빈 시간은 그대로 지나가요.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 03 Member experience -->
+  <section class="section" id="member" aria-labelledby="member-title">
+    <div class="container split">
+      <figure class="member-shot reveal">
+        <div class="frame">
+          <img src="/images/store-member-hero.jpg" alt="PROT 회원 앱 소개와 홈 예시 화면" width="647" height="1400" loading="lazy">
+        </div>
+        <figcaption class="caption">예시 화면</figcaption>
+      </figure>
+      <div>
+        <p class="app-tag reveal"><img src="/images/app-icon-member.png" alt="" aria-hidden="true" width="512" height="512" loading="lazy">PROT 회원 앱</p>
+        <h2 class="title reveal" id="member-title" style="margin-top:18px">회원에게는, <span class="key">운동이 끝난 뒤에도</span> 이어지는 경험을.</h2>
+        <p class="lead reveal">PROT 회원 앱 하나면 체크인부터 지난 수업일지까지 다 들어 있어요. 데스크에 물어보지 않아도 됩니다.</p>
+        <dl class="feature-rows">
+          <div class="reveal" style="--d:1"><dt>체크인과 이용 정보</dt><dd>센터에 도착해 앱으로 체크인하면 출석이 기록됩니다.</dd></div>
+          <div class="reveal" style="--d:2"><dt>1회 PT 상품과 예약</dt><dd>트레이너가 열어 둔 시간과 1회 PT 상품을 보고 바로 예약해요.</dd></div>
+          <div class="reveal" style="--d:3"><dt>수업일지와 피드백</dt><dd>운동 기록과 트레이너 코멘트를 수업이 끝난 뒤에도 다시 볼 수 있습니다.</dd></div>
+          <div class="reveal" style="--d:4"><dt>센터 소식과 문의</dt><dd>공지와 이벤트를 앱에서 받고, 말하기 어려운 건 익명으로 물어봐요.</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 1회 PT -->
+  <section class="section dark" id="pt" aria-labelledby="pt-title">
+    <div class="container">
+      <div class="pt-head reveal">
+        <p class="label">1회 PT 예약·판매</p>
+        <h2 class="title" id="pt-title" style="margin-top:14px"><span class="nw">트레이너의 빈 시간,</span> <span class="nw"><span class="key">새로운 PT 판매</span>로</span> <span class="nw">연결하세요.</span></h2>
+        <p class="lead">트레이너가 가능한 시간과 1회 PT 상품을 올려 두면, 회원이 앱에서 보고 예약합니다. 지금 실제로 쓸 수 있는 기능이에요.</p>
+      </div>
+      <div class="pt-body">
+        <ol class="steps">
+          <li class="reveal" style="--d:1"><span class="n">01</span><h3>가능 시간 등록</h3><p>트레이너가 일정 화면에서 비는 시간을 표시해 둡니다.</p></li>
+          <li class="reveal" style="--d:2"><span class="n">02</span><h3>회원 앱에 1회 PT 노출</h3><p>만들어 둔 1회 PT 상품이 회원 앱에 보여요.</p></li>
+          <li class="reveal" style="--d:3"><span class="n">03</span><h3>회원이 상품과 시간을 골라 예약</h3><p>회원이 원하는 시간을 고르고 예약을 요청합니다.</p></li>
+          <li class="reveal" style="--d:4"><span class="n">04</span><h3>트레이너 예약 확인</h3><p>들어온 요청은 트레이너 홈 화면에서 바로 확인해요.</p></li>
+        </ol>
+        <figure class="pt-figure reveal" style="--d:2">
+          <div class="pt-card">
+            <div class="crop crop-trainer-home">
+              <img src="/images/store-trainer-hero.jpg" alt="PROT 트레이너 앱 홈 예시 화면" width="647" height="1400" loading="lazy">
+            </div>
+          </div>
+          <figcaption class="caption">예시 화면 · 실제 데이터 아님</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 Admin -->
+  <section class="section" id="admin" aria-labelledby="admin-title">
+    <div class="container split admin-split">
+      <div>
+        <p class="label reveal">대표님용 PROT Admin</p>
+        <h2 class="title reveal" id="admin-title" style="margin-top:14px"><span class="nw">아침에 Admin</span> <span class="nw">하나만 열면,</span> <span class="nw">오늘 챙길</span> <span class="nw"><span class="key">문의와 상담</span>이</span> <span class="nw">보입니다.</span></h2>
+        <p class="lead reveal">회원·트레이너 현황과 아직 답하지 않은 문의를 PROT Admin에서 한눈에 확인합니다.</p>
+        <dl class="ops">
+          <div class="reveal" style="--d:1"><dt>운영 현황</dt><dd>앱 이용 회원과 PT 등록 현황이 첫 화면에 떠 있어요.</dd></div>
+          <div class="reveal" style="--d:2"><dt>상담·문의</dt><dd>답하지 않은 문의만 따로 모아 보고 바로 답합니다.</dd></div>
+          <div class="reveal" style="--d:3"><dt>회원·트레이너 관리</dt><dd>회원 정보를 고치고 메시지를 보냅니다. 트레이너는 가입 코드로 들어와요.</dd></div>
+          <div class="reveal" style="--d:4"><dt>공지·이벤트</dt><dd>글을 올리기 전에 회원 앱에서 어떻게 보일지 먼저 봅니다.</dd></div>
+        </dl>
+      </div>
+      <figure class="reveal" style="--d:1">
+        <div class="frame">
+          <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div class="crop crop-admin">
+            <img src="/images/screen-admin-dashboard.png" alt="PROT Admin 대시보드 예시 화면" width="1440" height="960" loading="lazy">
+          </div>
+        </div>
+        <figcaption class="caption">예시 화면 · 실제 데이터 아님</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 06 Onboarding -->
+  <section class="section section-gray" id="start" aria-labelledby="start-title">
+    <div class="container">
+      <div class="reveal">
+        <h2 class="title" id="start-title">도입은 상담 한 번에서 시작합니다.</h2>
+        <p class="lead">지금 센터를 어떻게 운영하고 계신지 듣고, 맞는 도입 순서를 같이 정합니다.</p>
+      </div>
+      <ol class="flow">
+        <li class="reveal" style="--d:1"><span class="n">01</span><h3>센터 상담</h3><p>운영 방식과 꼭 필요한 기능부터 여쭤봅니다.</p></li>
+        <li class="reveal" style="--d:2"><span class="n">02</span><h3>센터·트레이너 설정</h3><p>센터 정보와 회원권 상품을 등록하고, 가입 코드로 트레이너를 초대해요.</p></li>
+        <li class="reveal" style="--d:3"><span class="n">03</span><h3>회원 안내와 사용 시작</h3><p>회원은 휴대폰 번호로 가입하고 우리 센터를 고르면 됩니다.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 07 Pricing + FAQ -->
+  <section class="section" id="pricing" aria-labelledby="pricing-title">
+    <div class="container pf-grid">
+      <div class="pricing reveal">
+        <p class="label">요금 안내</p>
+        <h2 class="title" id="pricing-title" style="margin-top:14px">우리 센터에 필요한 기능과 요금을 안내해 드립니다.</h2>
+        <p class="lead">회원 수와 운영 방식을 들어 보고, 그에 맞는 구성으로 안내해 드려요.</p>
+        <a class="btn btn-primary" href="mailto:contact@prot.co.kr?subject=PROT%20%EB%8F%84%EC%9E%85%20%EC%9A%94%EA%B8%88%20%EB%AC%B8%EC%9D%98">도입 요금 문의하기</a>
+      </div>
+      <div class="faq" id="faq">
+        <details class="reveal" style="--d:1">
+          <summary>도입하면 기존 관리 프로그램을 바꿔야 하나요?</summary>
+          <p>아니요. 지금 쓰시는 회원관리 프로그램과 함께 쓸 수 있습니다.</p>
+        </details>
+        <details class="reveal" style="--d:2">
+          <summary>회원은 어떻게 서비스를 이용하나요?</summary>
+          <p>휴대폰 번호로 가입하고 다니는 센터를 선택하면, 회원권과 담당 트레이너가 앱에 함께 보여요.</p>
+        </details>
+        <details class="reveal" style="--d:3">
+          <summary>트레이너는 어떻게 합류하나요?</summary>
+          <p>Admin에 있는 헬스장 가입 코드를 공유하면, 트레이너가 앱에서 코드를 입력해 우리 센터로 들어옵니다.</p>
+        </details>
+        <details class="reveal" style="--d:4">
+          <summary>1회 PT는 어떻게 등록하고 예약하나요?</summary>
+          <p>트레이너가 가능한 시간과 1회 PT 상품을 등록해 두면, 회원이 앱에서 상품과 시간을 골라 예약을 요청합니다. 트레이너는 홈 화면에서 요청을 확인해요.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 Contact -->
+  <section class="section section-gray contact" id="contact" aria-labelledby="contact-title">
+    <div class="container reveal">
+      <h2 class="title" id="contact-title">회원 경험과 헬스장 운영, <span class="key">PROT로</span> 달라질 수 있을까요?</h2>
+      <p class="lead">메일로 센터 규모와 지금 고민을 알려 주세요. 적용할 수 있는 서비스와 도입 방법을 안내해 드리겠습니다.</p>
+      <div class="row">
+        <a class="btn btn-primary" href="mailto:contact@prot.co.kr?subject=PROT%20%EB%8F%84%EC%9E%85%20%EC%83%81%EB%8B%B4%20%EC%8B%A0%EC%B2%AD">도입 상담 신청하기</a>
+        <a class="mail" href="mailto:contact@prot.co.kr">contact@prot.co.kr</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <img src="/images/wordmark-white.png" alt="PROT" width="800" height="158" loading="lazy">
+    <ul class="footer-links">
+      <li><a href="/support/">고객지원</a></li>
+      <li><a href="https://cut-fahrenheit-5e8.notion.site/_-_-3d10842bf8fa80ca99d9d68cfbadffc8?source=copy_link" target="_blank" rel="noopener">회원 앱 개인정보처리방침</a></li>
+      <li><a href="https://cut-fahrenheit-5e8.notion.site/_-_-3e20842bf8fa80f69ceee5eb8e67a6e4?source=copy_link" target="_blank" rel="noopener">트레이너 앱 개인정보처리방침</a></li>
+    </ul>
+    <div class="footer-biz">
+      <p>상호 프로티 · 대표자 김주한 · 사업자등록번호 <span class="nw">772-04-03487</span></p>
+      <p>문의 <a href="mailto:contact@prot.co.kr">contact@prot.co.kr</a></p>
+      <p>Copyright 2026. PROT All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var nav = document.querySelector('.nav');
+  try {
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Header gets a hairline once the page scrolls
+    var ticking = false;
+    var updateNav = function () {
+      nav.classList.toggle('scrolled', window.scrollY > 8);
+      ticking = false;
+    };
+    window.addEventListener('scroll', function () {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(updateNav);
+      }
+    }, { passive: true });
+    updateNav();
+
+    var menu = document.querySelector('.menu');
+    if (menu) {
+      menu.querySelectorAll('a').forEach(function (a) {
+        a.addEventListener('click', function () { menu.open = false; });
+      });
+    }
+
+    // Scroll reveal: content is hidden only after the observer is in place
+    var items = document.querySelectorAll('.reveal');
+    if (!reduceMotion && 'IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+      items.forEach(function (el) { io.observe(el); });
+      root.classList.replace('no-js', 'js');
+    }
+  } catch (err) {
+    // Fall back to fully visible content
+    root.classList.remove('js');
+    root.classList.add('no-js');
+  }
+})();
+</script>
+</body>
+</html>
